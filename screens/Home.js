@@ -16,7 +16,7 @@ const Home = ({ navigation: { navigate } }) => {
 
 const View = styled.View`
 	flex: 1;
-	padding: 0px 50px;
+	padding: 0px 20px;
 	padding-top: 100px;
 	background-color: ${colors.bgColor};
 `;
@@ -36,11 +36,8 @@ const Btn = styled.TouchableOpacity`
 	border-radius: 40px;
 	justify-content: center;
 	align-items: center;
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
 	background-color: ${colors.btnColor};
-`;
-
-const BtnText = styled.Text`
-	color: #fff;
 `;
 
 export default Home;
