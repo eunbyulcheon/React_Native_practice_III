@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "journal-app",
+    "slug": "journal-app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "journal-app"
+}
