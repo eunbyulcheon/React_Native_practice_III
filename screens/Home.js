@@ -4,6 +4,7 @@ import { useDB } from '../context';
 import { LayoutAnimation, ScrollView, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import colors from '../colors';
+import { AdMobBanner } from 'expo-ads-admob';
 
 const Home = ({ navigation: { navigate } }) => {
 	const realm = useDB();
@@ -11,7 +12,7 @@ const Home = ({ navigation: { navigate } }) => {
 
 	useEffect(() => {
 		const feelings = realm.objects('Feeling');
-		feelings.addListener((feelings, changes) => {
+		feelings.addListener((feelings) => {
 			LayoutAnimation.spring();
 			setFeelings(feelings.sorted('_id', true));
 		});
@@ -30,7 +31,15 @@ const Home = ({ navigation: { navigate } }) => {
 	return (
 		<View>
 			<Title>My Journal</Title>
-			<ScrollView contentContainerStyle={{ paddingVertical: 10 }}>
+			<AdMobBanner
+				bannerSize="largeBanner"
+				adUnitID="ca-app-pub-3940256099942544/2934735716"
+			/>
+
+			<ScrollView
+				style={{ marginVertical: 30, width: '100%' }}
+				contentContainerStyle={{ paddingVertical: 10 }}
+			>
 				{feelings.map((item) => (
 					<TouchableOpacity
 						key={item._id + ''}
@@ -52,13 +61,16 @@ const Home = ({ navigation: { navigate } }) => {
 
 const View = styled.View`
 	flex: 1;
+	justify-content: center;
+	align-items: center;
 	padding: 0px 20px;
 	padding-top: 100px;
 	background-color: ${colors.bgColor};
 `;
 
 const Title = styled.Text`
-	margin-bottom: 50px;
+	width: 100%;
+	margin-bottom: 20px;
 	color: ${colors.textColor};
 	font-size: 38px;
 `;

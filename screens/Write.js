@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import styled from 'styled-components/native';
 import { useDB } from '../context';
 import colors from '../colors';
+import { AdMobInterstitial, AdMobRewarded } from 'expo-ads-admob';
 
 const emotions = ['🤧', '😍', '🤬', '😭', '🤗', '🤩', '😱'];
 
@@ -13,18 +14,27 @@ const Write = ({ navigation: { goBack } }) => {
 
 	const onChangeText = (text) => setFeelings(text);
 	const onEmotionPress = (face) => setEmotion(face);
-	const onSubmit = () => {
+	const onSubmit = async () => {
 		if (feelings === '' || selectedEmotion === null) {
 			return Alert.alert('Please complete the form.');
 		}
-		realm.write(() => {
-			realm.create('Feeling', {
-				_id: Date.now(),
-				emotion: selectedEmotion,
-				message: feelings,
+
+		await AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1712485313');
+		await AdMobRewarded.requestAdAsync();
+		await AdMobRewarded.showAdAsync();
+
+		AdMobRewarded.addEventListener('rewardedVideoUserDidEarnReward', () => {
+			AdMobRewarded.addEventListener('rewardedVideoDidDismiss', () => {
+				realm.write(() => {
+					realm.create('Feeling', {
+						_id: Date.now(),
+						emotion: selectedEmotion,
+						message: feelings,
+					});
+				});
+				goBack();
 			});
 		});
-		goBack();
 	};
 
 	return (
@@ -93,6 +103,7 @@ const TextInput = styled.TextInput`
 	border-radius: 20px;
 	background-color: #fff;
 	font-size: 18px;
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const Btn = styled.TouchableOpacity`

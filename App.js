@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import Navigator from './navigator';
 import { DBContext } from './context';
+import { setTestDeviceIDAsync } from 'expo-ads-admob';
 
 const FeelingSchema = {
 	name: 'Feeling',
@@ -22,6 +23,7 @@ export default function App() {
 	useEffect(() => {
 		async function prepare() {
 			try {
+				await setTestDeviceIDAsync('EMULATOR');
 				await SplashScreen.preventAutoHideAsync();
 				const connection = await Realm.open({
 					path: 'JournalDB',
