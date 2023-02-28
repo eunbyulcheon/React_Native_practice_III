@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useDB } from '../context';
-import { FlatList } from 'react-native';
+import { LayoutAnimation, ScrollView, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import colors from '../colors';
 
@@ -11,31 +11,38 @@ const Home = ({ navigation: { navigate } }) => {
 
 	useEffect(() => {
 		const feelings = realm.objects('Feeling');
-		setFeelings(feelings);
-		feelings.addListener(() => {
-			const feelings = realm.objects('Feeling');
-			setFeelings(feelings);
+		feelings.addListener((feelings, changes) => {
+			LayoutAnimation.spring();
+			setFeelings(feelings.sorted('_id', true));
 		});
 		return () => {
 			feelings.removeAllListeners();
 		};
 	}, []);
 
+	const onPress = (id) => {
+		realm.write(() => {
+			const feeling = realm.objectForPrimaryKey('Feeling', id);
+			realm.delete(feeling);
+		});
+	};
+
 	return (
 		<View>
 			<Title>My Journal</Title>
-			<FlatList
-				data={feelings}
-				contentContainerStyle={{ paddingVertical: 10 }}
-				ItemSeparatorComponent={Separator}
-				keyExtractor={(item) => item._id + ''}
-				renderItem={({ item }) => (
-					<Record>
-						<Emotion>{item.emotion}</Emotion>
-						<Message>{item.message}</Message>
-					</Record>
-				)}
-			/>
+			<ScrollView contentContainerStyle={{ paddingVertical: 10 }}>
+				{feelings.map((item) => (
+					<TouchableOpacity
+						key={item._id + ''}
+						onPress={() => onPress(item._id)}
+					>
+						<Record>
+							<Emotion>{item.emotion}</Emotion>
+							<Message>{item.message}</Message>
+						</Record>
+					</TouchableOpacity>
+				))}
+			</ScrollView>
 			<Btn onPress={() => navigate('Write')}>
 				<Ionicons name="add" color="white" size={40} />
 			</Btn>
@@ -51,7 +58,7 @@ const View = styled.View`
 `;
 
 const Title = styled.Text`
-	margin-bottom: 80px;
+	margin-bottom: 50px;
 	color: ${colors.textColor};
 	font-size: 38px;
 `;
@@ -59,6 +66,7 @@ const Title = styled.Text`
 const Record = styled.View`
 	flex-direction: row;
 	align-items: center;
+	margin-bottom: 10px;
 	padding: 10px 20px;
 	border-radius: 10px;
 	background-color: ${colors.cardColor};
