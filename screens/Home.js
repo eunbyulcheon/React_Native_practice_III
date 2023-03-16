@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useDB } from '../context';
-import { LayoutAnimation, ScrollView, TouchableOpacity } from 'react-native';
+import { FlatList, LayoutAnimation, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import colors from '../colors';
 import { AdMobBanner } from 'expo-ads-admob';
@@ -36,11 +36,13 @@ const Home = ({ navigation: { navigate } }) => {
 				adUnitID="ca-app-pub-3940256099942544/2934735716"
 			/>
 
-			<ScrollView
-				style={{ marginVertical: 30, width: '100%' }}
-				contentContainerStyle={{ paddingVertical: 10 }}
-			>
-				{feelings.map((item) => (
+			<FlatList
+				style={{ width: '100%' }}
+				data={feelings.map((x) => x)}
+				keyExtractor={(item) => item._id + ''}
+				contentContainerStyle={{ paddingVertical: 30 }}
+				ItemSeparatorComponent={Separator}
+				renderItem={({ item }) => (
 					<TouchableOpacity
 						key={item._id + ''}
 						onPress={() => onPress(item._id)}
@@ -50,8 +52,8 @@ const Home = ({ navigation: { navigate } }) => {
 							<Message>{item.message}</Message>
 						</Record>
 					</TouchableOpacity>
-				))}
-			</ScrollView>
+				)}
+			/>
 			<Btn onPress={() => navigate('Write')}>
 				<Ionicons name="add" color="white" size={40} />
 			</Btn>
@@ -78,7 +80,7 @@ const Title = styled.Text`
 const Record = styled.View`
 	flex-direction: row;
 	align-items: center;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	padding: 10px 20px;
 	border-radius: 10px;
 	background-color: ${colors.cardColor};
